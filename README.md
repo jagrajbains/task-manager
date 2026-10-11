@@ -22,6 +22,8 @@ Find one task. `id` is a numeric id, sent in the URL as a string.
 
 **Missing id:** `404` and `{ "error": "Task not found" }`.
 
+**Non-integer id:** `400` and `{ "error": "id must be an integer" }`.
+
 ```bash
 curl http://localhost:3000/tasks/1
 ```
@@ -60,6 +62,8 @@ Replace a task. All three body fields are required; partial updates are not acce
 
 **Missing id:** `404` and `{ "error": "Task not found" }`.
 
+**Non-integer id:** `400` and `{ "error": "id must be an integer" }`.
+
 ```bash
 curl -X PUT http://localhost:3000/tasks/1 \
   -H "Content-Type: application/json" \
@@ -73,6 +77,8 @@ Remove a task.
 **Success:** `200` and the removed task.
 
 **Missing id:** `404` and `{ "error": "Task not found" }`.
+
+**Non-integer id:** `400` and `{ "error": "id must be an integer" }`.
 
 ```bash
 curl -X DELETE http://localhost:3000/tasks/1

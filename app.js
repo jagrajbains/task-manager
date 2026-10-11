@@ -11,6 +11,10 @@ app.get('/', (req, res) => {
 });
 app.use('/tasks', tasksRouter);
 
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({ error: err.message });
+});
+
 app.listen(port, (err) => {
     if (err) {
       return console.log('Something bad happened', err);

@@ -128,6 +128,7 @@ router.put('/:id', (req, res) => {
   if (error) {
     return res.status(400).json({ error });
   }
+  // priority is a partial update; omit it to keep the current value (low | medium | high).
   task.title = req.body.title;
   task.description = req.body.description;
   task.completed = req.body.completed;

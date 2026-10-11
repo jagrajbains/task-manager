@@ -2,7 +2,22 @@
 
 In-memory REST API for tasks. Each task has `id` (number), `title` (string), `description` (string), and `completed` (boolean). `priority` (`low`, `medium`, or `high`) is optional. `createdAt` is an ISO date string set by the server when a task is created. Seed tasks do not include either field.
 
-The server listens on port 3000 when started with `npm run dev` or `node app.js`. Don't forget to `npm install` first.
+## Setup
+
+Use Node.js 18. Install dependencies, then start the server on port 3000:
+
+```bash
+npm install
+npm run dev
+```
+
+`npm run dev` restarts the server when files change. `node app.js` starts it once.
+
+Run the tests:
+
+```bash
+npm test
+```
 
 ## GET /tasks
 
@@ -72,7 +87,7 @@ curl -X POST http://localhost:3000/tasks \
 
 ## PUT /tasks/:id
 
-Replace `title`, `description`, and `completed`. Those three fields are required. `priority` is optional; omit it to leave the current value unchanged. `createdAt` cannot be changed.
+Replace `title`, `description`, and `completed`. Those three fields are required. `priority` is a partial update: omit it to keep the task's current priority, or send `low`, `medium`, or `high` to change it. Omitting `priority` does not remove it. `createdAt` cannot be changed.
 
 **Body:** same field rules as `POST /tasks`. Unknown fields are rejected.
 

@@ -1,17 +1,34 @@
 # Task Manager API
 
-In-memory REST API for tasks. Each task has `id` (number), `title` (string), `description` (string), and `completed` (boolean).
+In-memory REST API for tasks. Each task has `id` (number), `title` (string), `description` (string), and `completed` (boolean). `priority` (`low`, `medium`, or `high`) is optional. `createdAt` is an ISO date string set by the server when a task is created. Seed tasks do not include either field.
 
 The server listens on port 3000 when started with `npm run dev` or `node app.js`. Don't forget to `npm install` first.
 
 ## GET /tasks
 
-List every task.
+List tasks. Results are sorted by `createdAt` ascending. Tasks with a missing or empty `createdAt` stay at the end, in their existing order.
 
-**Success:** `200` and a JSON array. An empty store returns `[]`.
+**Query:** `completed=true` or `completed=false` keeps only tasks with that boolean status. Omit it to return every task.
+
+**Success:** `200` and a JSON array. An empty match returns `[]`.
+
+**Invalid filter:** `400` and `{ "error": "completed must be true or false" }`.
 
 ```bash
 curl http://localhost:3000/tasks
+curl "http://localhost:3000/tasks?completed=true"
+```
+
+## GET /tasks/priority/:level
+
+List tasks whose `priority` is `low`, `medium`, or `high`. Same sort as `GET /tasks`.
+
+**Success:** `200` and a JSON array. No matches returns `[]`.
+
+**Invalid level:** `400` and `{ "error": "priority must be low, medium, or high" }`.
+
+```bash
+curl http://localhost:3000/tasks/priority/high
 ```
 
 ## GET /tasks/:id
@@ -36,13 +53,16 @@ Create a task. The next id is assigned automatically.
 
 | Field | Type | Rule |
 | --- | --- | --- |
-| title | string | non-empty, not whitespace only |
-| description | string | non-empty, not whitespace only |
-| completed | boolean | `true` or `false`, not the strings `"true"` or `"false"` |
+| title | string | required; non-empty, not whitespace only |
+| description | string | required; non-empty, not whitespace only |
+| completed | boolean | required; `true` or `false`, not the strings `"true"` or `"false"` |
+| priority | string | optional; `low`, `medium`, or `high` |
 
-**Success:** `201` and the created task, including `id`.
+The server sets `createdAt`. Sending `createdAt` in the body is rejected.
 
-**Invalid input:** `400` and `{ "error": "<what to fix>" }`. Any field other than `title`, `description`, and `completed` is rejected, including `id`.
+**Success:** `201` and the created task, including `id` and `createdAt`. An omitted `priority` is not stored.
+
+**Invalid input:** `400` and `{ "error": "<what to fix>" }`. Any other field is rejected, including `id` and `createdAt`.
 
 ```bash
 curl -X POST http://localhost:3000/tasks \
@@ -52,9 +72,9 @@ curl -X POST http://localhost:3000/tasks \
 
 ## PUT /tasks/:id
 
-Replace a task. All three body fields are required; partial updates are not accepted.
+Replace `title`, `description`, and `completed`. Those three fields are required. `priority` is optional; omit it to leave the current value unchanged. `createdAt` cannot be changed.
 
-**Body:** same fields and rules as `POST /tasks`. Unknown fields are rejected.
+**Body:** same field rules as `POST /tasks`. Unknown fields are rejected.
 
 **Success:** `200` and the updated task.
 
